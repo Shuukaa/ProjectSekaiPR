@@ -37,29 +37,6 @@ fetch('songList.json')
         console.error("Error loading JSON:", error);
     });
 
-
-configureLoadButton();
-
-function configureLoadButton() {
-    let loadButton = document.getElementById("load");
-    let title = document.querySelector('.title');
-    let battleNoLocal = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-battleNo`));
-    let leftIndexLocal = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-leftIndex`));
-    if (battleNoLocal == null) {
-        loadButton.hidden = true;
-        title.textContent = 'Press "Start" to begin sorting.';
-        return;
-    }
-
-    if (leftIndexLocal == -1) {
-        loadButton.textContent = "Show Results";
-        title.textContent = 'Press "Start" to begin sorting or "Show Results" to display results of previous sorting.';
-    } else {
-        loadButton.textContent = "Continue";
-        title.textContent = 'Press "Start" to begin sorting or "Continue" to load saved progress and resume where you left.';
-    }
-}
-
 function showDuel(id1, id2) {
     const duelContainer = document.getElementById('duel');
     duelContainer.innerHTML = "";
@@ -91,7 +68,7 @@ function showDuel(id1, id2) {
             }
 
         } else {
-            videoElement = "<div>MP3 not available!</div>";
+            videoElement = "<div>MP3 not available !</div>";
         }
 
         card.innerHTML = `
@@ -118,7 +95,7 @@ function showDuel(id1, id2) {
         duelContainer.appendChild(createMusicCard(musicData[id1], true));
         duelContainer.appendChild(createMusicCard(musicData[id2], false));
     } else {
-        console.error("Index out of range!");
+        console.error("Index out of range !");
     }
 
     const percent = Math.floor(sortedNo * 100 / totalBattles);
@@ -175,7 +152,7 @@ function pick(sortType) {
     }
 
     if (leftIndex < 0) {
-        progressBar(`Completed! (${battleNo} battles)`, 100);
+        progressBar(`Completed ! (${battleNo} battles)`, 100);
         autoSave();
         result();
     } else {
@@ -199,7 +176,7 @@ function recordData(sortType) {
 }
 
 function start() {
-    document.querySelector('.title').style.display = "none";
+    document.querySelector('.title').style.visibility = "hidden";
     document.getElementById("start").style.display = "none";
     document.getElementById("load").style.display = "none";
 
@@ -281,9 +258,8 @@ function result() {
         element.style.display = 'none';
     });
 
-    document.querySelector('.title').style.display = "block";
-    document.querySelector('.title').style.height = "3%";
-    document.querySelector('.title').textContent = "Make sure your sheet is sorted by ID before pasting!";
+    document.querySelector('.title').style.visibility = "visible";
+    document.querySelector('.title').textContent = "Make sure your sheet is sorted by ID before pasting !";
 
     let buttons = document.querySelectorAll('.basic-button');
     buttons.forEach(btn => btn.style.display = "none");
@@ -292,15 +268,9 @@ function result() {
     button1.classList.add("copy-button");
     button1.textContent = "Copy ranks to clipboard";
     button1.addEventListener("click", copyToClipboard);
-    
-    let button2 = document.createElement("button");
-    button2.classList.add("copy-button");
-    button2.textContent = "Copy sorted results";
-    button2.addEventListener("click", copyResults);
 
     let container = document.querySelector(".button-container");
     container.appendChild(button1);
-    container.appendChild(button2);
 
     const table = document.createElement('table');
     const thead = document.createElement('thead');
@@ -391,114 +361,88 @@ function copyToClipboard() {
     });
     const textToCopy = ranksByID.join("\n");
     navigator.clipboard.writeText(textToCopy).then(() => {
-        alert("Copied ranks to clipboard!");
+        alert("Copied ranks to clipboard !");
     }).catch(err => {
         console.error("Error copying ranks :", err);
     });
 }
 
-function copyResults() {
-    const sortedResults = [];
-    musicData.forEach(music => {
-        sortedResults.push({
-            id: music.id,
-            anime: music.anime,
-            name: music.name,
-            rank: sortedIndexList[0].indexOf(music.id - 1) + 1
-        });
-    });
-
-    sortedResults.sort((a, b) => a.rank - b.rank);
-
-    const textToCopy = sortedResults.map(result => `${result.rank}. ${result.anime} - ${result.name}`).join("\n");
-    navigator.clipboard.writeText(textToCopy).then(() => {
-        alert("Copied results to clipboard!");
-    }).catch(err => {
-        console.error("Error copying results :", err);
-    });
-}
-
 function autoSave() {
 
-    localStorage.setItem(`${config.localStoragePrefix}-sortedIndexList`, JSON.stringify(sortedIndexList));
-    localStorage.setItem(`${config.localStoragePrefix}-recordDataList`, JSON.stringify(recordDataList));
-    localStorage.setItem(`${config.localStoragePrefix}-parentIndexList`, JSON.stringify(parentIndexList));
+    localStorage.setItem("sortedIndexList", JSON.stringify(sortedIndexList));
+    localStorage.setItem("recordDataList", JSON.stringify(recordDataList));
+    localStorage.setItem("parentIndexList", JSON.stringify(parentIndexList));
 
-    localStorage.setItem(`${config.localStoragePrefix}-leftIndex`, JSON.stringify(leftIndex));
-    localStorage.setItem(`${config.localStoragePrefix}-leftInnerIndex`, JSON.stringify(leftInnerIndex));
-    localStorage.setItem(`${config.localStoragePrefix}-rightIndex`, JSON.stringify(rightIndex));
-    localStorage.setItem(`${config.localStoragePrefix}-rightInnerIndex`, JSON.stringify(rightInnerIndex));
-    localStorage.setItem(`${config.localStoragePrefix}-battleNo`, JSON.stringify(battleNo));
-    localStorage.setItem(`${config.localStoragePrefix}-sortedNo`, JSON.stringify(sortedNo));
-    localStorage.setItem(`${config.localStoragePrefix}-pointer`, JSON.stringify(pointer));
+    localStorage.setItem("leftIndex", JSON.stringify(leftIndex));
+    localStorage.setItem("leftInnerIndex", JSON.stringify(leftInnerIndex));
+    localStorage.setItem("rightIndex", JSON.stringify(rightIndex));
+    localStorage.setItem("rightInnerIndex", JSON.stringify(rightInnerIndex));
+    localStorage.setItem("battleNo", JSON.stringify(battleNo));
+    localStorage.setItem("sortedNo", JSON.stringify(sortedNo));
+    localStorage.setItem("pointer", JSON.stringify(pointer));
 
-    localStorage.setItem(`${config.localStoragePrefix}-sortedIndexListPrev`, JSON.stringify(sortedIndexListPrev));
-    localStorage.setItem(`${config.localStoragePrefix}-recordDataListPrev`, JSON.stringify(recordDataListPrev));
-    localStorage.setItem(`${config.localStoragePrefix}-parentIndexListPrev`, JSON.stringify(parentIndexListPrev));
+    localStorage.setItem("sortedIndexListPrev", JSON.stringify(sortedIndexListPrev));
+    localStorage.setItem("recordDataListPrev", JSON.stringify(recordDataListPrev));
+    localStorage.setItem("parentIndexListPrev", JSON.stringify(parentIndexListPrev));
 
-    localStorage.setItem(`${config.localStoragePrefix}-leftIndexPrev`, JSON.stringify(leftIndexPrev));
-    localStorage.setItem(`${config.localStoragePrefix}-leftInnerIndexPrev`, JSON.stringify(leftInnerIndexPrev));
-    localStorage.setItem(`${config.localStoragePrefix}-rightIndexPrev`, JSON.stringify(rightIndexPrev));
-    localStorage.setItem(`${config.localStoragePrefix}-rightInnerIndexPrev`, JSON.stringify(rightInnerIndexPrev));
-    localStorage.setItem(`${config.localStoragePrefix}-battleNoPrev`, JSON.stringify(battleNoPrev));
-    localStorage.setItem(`${config.localStoragePrefix}-sortedNoPrev`, JSON.stringify(sortedNoPrev));
-    localStorage.setItem(`${config.localStoragePrefix}-pointerPrev`, JSON.stringify(pointerPrev));
+    localStorage.setItem("leftIndexPrev", JSON.stringify(leftIndexPrev));
+    localStorage.setItem("leftInnerIndexPrev", JSON.stringify(leftInnerIndexPrev));
+    localStorage.setItem("rightIndexPrev", JSON.stringify(rightIndexPrev));
+    localStorage.setItem("rightInnerIndexPrev", JSON.stringify(rightInnerIndexPrev));
+    localStorage.setItem("battleNoPrev", JSON.stringify(battleNoPrev));
+    localStorage.setItem("sortedNoPrev", JSON.stringify(sortedNoPrev));
+    localStorage.setItem("pointerPrev", JSON.stringify(pointerPrev));
 
-    localStorage.setItem(`${config.localStoragePrefix}-totalBattles`, JSON.stringify(totalBattles));
+    localStorage.setItem("totalBattles", JSON.stringify(totalBattles));
 }
 
 function loadProgress() {
-    battleNo = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-battleNo`));
-    leftIndex = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-leftIndex`));
-    if (battleNo == null) {
-        alert("Can't find resources");
+
+    battleNo = JSON.parse(localStorage.getItem("battleNo"));
+    leftIndex = JSON.parse(localStorage.getItem("leftIndex"));
+    if (battleNo == null || leftIndex == -1) {
+        alert("Can't find resources or already finished");
         battleNo = 1;
         return;
     }
 
-    sortedIndexList = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-sortedIndexList`));
-    recordDataList = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-recordDataList`));
-    parentIndexList = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-parentIndexList`));
+    sortedIndexList = JSON.parse(localStorage.getItem("sortedIndexList"));
+    recordDataList = JSON.parse(localStorage.getItem("recordDataList"));
+    parentIndexList = JSON.parse(localStorage.getItem("parentIndexList"));
 
-    leftInnerIndex = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-leftInnerIndex`));
-    rightIndex = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-rightIndex`));
-    rightInnerIndex = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-rightInnerIndex`));
-    sortedNo = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-sortedNo`));
-    pointer = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-pointer`));
+    leftInnerIndex = JSON.parse(localStorage.getItem("leftInnerIndex"));
+    rightIndex = JSON.parse(localStorage.getItem("rightIndex"));
+    rightInnerIndex = JSON.parse(localStorage.getItem("rightInnerIndex"));
+    sortedNo = JSON.parse(localStorage.getItem("sortedNo"));
+    pointer = JSON.parse(localStorage.getItem("pointer"));
 
-    sortedIndexListPrev = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-sortedIndexListPrev`));
-    recordDataListPrev = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-recordDataListPrev`));
-    parentIndexListPrev = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-parentIndexListPrev`));
+    sortedIndexListPrev = JSON.parse(localStorage.getItem("sortedIndexListPrev"));
+    recordDataListPrev = JSON.parse(localStorage.getItem("recordDataListPrev"));
+    parentIndexListPrev = JSON.parse(localStorage.getItem("parentIndexListPrev"));
 
-    leftIndexPrev = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-leftIndexPrev`));
-    leftInnerIndexPrev = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-leftInnerIndexPrev`));
-    rightIndexPrev = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-rightIndexPrev`));
-    rightInnerIndexPrev = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-rightInnerIndexPrev`));
-    battleNoPrev = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-battleNoPrev`));
-    sortedNoPrev = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-sortedNoPrev`));
-    pointerPrev = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-pointerPrev`));
+    leftIndexPrev = JSON.parse(localStorage.getItem("leftIndexPrev"));
+    leftInnerIndexPrev = JSON.parse(localStorage.getItem("leftInnerIndexPrev"));
+    rightIndexPrev = JSON.parse(localStorage.getItem("rightIndexPrev"));
+    rightInnerIndexPrev = JSON.parse(localStorage.getItem("rightInnerIndexPrev"));
+    battleNoPrev = JSON.parse(localStorage.getItem("battleNoPrev"));
+    sortedNoPrev = JSON.parse(localStorage.getItem("sortedNoPrev"));
+    pointerPrev = JSON.parse(localStorage.getItem("pointerPrev"));
 
-    totalBattles = JSON.parse(localStorage.getItem(`${config.localStoragePrefix}-totalBattles`));
+    totalBattles = JSON.parse(localStorage.getItem("totalBattles"));
 
-    if (leftIndex == -1) {
-        document.querySelector('.progress-container').removeAttribute("hidden");
-        progressBar(`Completed! (${battleNo} battles)`, 100);
-        result();
-    } else {
-        document.querySelector('.title').style.display = "none";
-        document.getElementById("start").style.display = "none";
-        document.getElementById("load").style.display = "none";
+    document.querySelector('.title').style.visibility = "hidden";
+    document.getElementById("start").style.display = "none";
+    document.getElementById("load").style.display = "none";
 
-        let button1 = document.createElement("button");
-        button1.classList.add("basic-button");
-        button1.textContent = "Undo";
-        button1.addEventListener("click", undo);
+    let button1 = document.createElement("button");
+    button1.classList.add("basic-button");
+    button1.textContent = "Undo";
+    button1.addEventListener("click", undo);
 
-        let container = document.querySelector(".button-container");
-        container.appendChild(button1);
+    let container = document.querySelector(".button-container");
+    container.appendChild(button1);
 
-        document.querySelector('.progress-container').removeAttribute("hidden");
+    document.querySelector('.progress-container').removeAttribute("hidden");
 
-        showDuel(sortedIndexList[leftIndex][leftInnerIndex], sortedIndexList[rightIndex][rightInnerIndex]);
-    }
+    showDuel(sortedIndexList[leftIndex][leftInnerIndex], sortedIndexList[rightIndex][rightInnerIndex]);
 }
